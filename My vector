@@ -1,0 +1,139 @@
+#pragma once
+#include<exception>
+template<typename T>
+class vector {
+private:
+	T* data;
+	size_t size;
+	size_t capacity;
+
+	void free();
+
+	void copy(const vector<T>& other);
+
+	void resize();
+public:
+	vector();
+
+	vector(const vector<T>& other);
+
+	~vector();
+
+	vector<T>& operator=(const vector<T>& other);
+
+	size_t getSize() const;
+	const T* getData() const;
+	void Add(const T& elem);
+	void RemoveLast();
+	void overrideValueAtIndex(size_t, const T&);
+
+	T& operator[](size_t index);
+	const T operator[](size_t index) const;
+};
+
+template<typename T>
+void vector<T>::overrideValueAtIndex(size_t index, const T& value) {
+	data[index] = value;
+}
+
+template<typename T>
+void vector<T>::free() {
+	delete[] data;
+}
+
+template<typename T>
+void vector<T>::copy(const vector<T>& other) {
+	size = other.size;
+	capacity = other.capacity;
+	data = new T[capacity];
+
+	for (int i = 0; i < size; i++)
+		data[i] = other.data[i];
+}
+
+template<typename T>
+void vector<T>::resize() {
+	capacity = 2 * capacity;
+
+	T* newMemory = new T[capacity];
+
+	for (int i = 0; i < size; i++)
+		newMemory[i] = data[i];
+
+	delete[] data;
+	data = newMemory;
+}
+
+template<typename T>
+vector<T>::vector() {
+	size = 0;
+	capacity = 8;
+	data = new T[capacity];
+}
+
+template<typename T>
+vector<T>::vector(const vector<T>& other) {
+	copy(other);
+}
+
+template<typename T>
+vector<T>::~vector() {
+	free();
+}
+
+template<typename T>
+vector<T>& vector<T>::operator=(const vector<T>& other)
+{
+	if (this != &other) {
+		free();
+		copy(other);
+	}
+	return *this;
+}
+
+template<typename T>
+size_t vector<T>::getSize() const {
+	return size;
+}
+
+template<typename T>
+const T* vector<T>::getData() const {
+	return data;
+}
+
+template<typename T>
+void vector<T>::Add(const T& elem) {
+	if (size == capacity)
+		resize();
+
+	data[size++] = elem;
+}
+
+template<typename T>
+void vector<T>::RemoveLast() {
+	if (size == capacity / 2)
+		capacity = capacity / 2;
+
+	T* newMemory = new T[capacity];
+	size--;
+	for (int i = 0; i < size; i++)
+		newMemory[i] = data[i];
+
+	delete[] data;
+	data = newMemory;
+	newMemory = nullptr;
+}
+
+template<typename T>
+T& vector<T>::operator[](size_t index) {
+	if (index >= size)
+		throw std::exception("out of range");
+	return data[index];
+}
+
+template<typename T>
+const T vector<T>::operator[](size_t index) const {
+	if (index >= size)
+		throw std::exception("out of range");
+	return data[index];
+}
